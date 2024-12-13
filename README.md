@@ -1,4 +1,4 @@
-# ML-DEPCHECK-UTILITY
+# ml-depcheck-utility
 
 This project provides a script to scan the dependencies and transitive dependencies of a Node.js repository and identify any deprecated packages. It checks both the root-level dependencies and all nested dependencies for deprecation status and provides a detailed report.
 
