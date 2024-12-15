@@ -22,9 +22,13 @@ You can run the utility directly from the command line once it is installed.
 You can change the mode in two ways:
 
 1. **Via the config/default.json file:**
-   The default configuration can be modified by updating the mode setting in the config/default.json file. It supports two modes: - **warning:** Will log deprecated dependencies as warnings (default behavior). - **error:** Will log deprecated dependencies as errors and exit the process with a non-zero exit code.
+   The default configuration can be modified by updating the mode setting in the config/default.json file. It supports two modes:
+   - **warning:** Will log deprecated dependencies as warnings (default behavior).
+   - **error:** Will log deprecated dependencies as errors and exit the process with a non-zero exit code.
 2. **Via Environment Variable:**
-   You can override the configuration by setting the MODE environment variable before running the utility. The commands are as follows: - `MODE=warning depcheck` - `MODE=error depcheck`
+   You can override the configuration by setting the MODE environment variable before running the utility. The commands are as follows:
+   - `MODE=warning depcheck`
+   - `MODE=error depcheck`
 
 ## Example Output
 
