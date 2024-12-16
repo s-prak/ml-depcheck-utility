@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Utility tool for checking deprecation status of dependencies",
   "main": "index.js",
+  "bin": {
+    "depcheck": "./bin/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
