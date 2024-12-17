@@ -146,4 +146,4 @@ function runDependencyCheck() {
 
 module.exports = {
     runDependencyCheck
-  };
+};
