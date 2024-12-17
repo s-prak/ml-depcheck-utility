@@ -2,7 +2,7 @@
   "name": "ml-depcheck-utility",
   "version": "1.0.0",
   "description": "Utility tool for checking deprecation status of dependencies",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
     "depcheck": "./bin/cli.js"
   },

@@ -84,7 +84,7 @@ function checkDependenciesSync(command) {
     }
 }
 
-function runDependencyCheckSync() {
+function runDependencyCheck() {
     let errorOccurred = false; // Track if any errors occurred
 
     console.log('Checking dependencies at root level...');
@@ -145,5 +145,5 @@ function runDependencyCheckSync() {
 }
 
 module.exports = {
-    runDependencyCheckSync
+    runDependencyCheck
   };
