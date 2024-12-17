@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/mojaloop/ml-depcheck-utility/issues"
   },
-  "homepage": "https://github.com/mojaloop/ml-depcheck-utility#readme"
+  "homepage": "https://github.com/mojaloop/ml-depcheck-utility#readme",
+  "publishConfig": {
+    "@mojaloop:registry": "https://npm.pkg.github.com"
+  }
 }
