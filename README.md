@@ -15,7 +15,7 @@ This utility provides a script to scan the dependencies and transitive dependenc
 ## Usage
 
 You can run the utility directly from the command line once it is installed.<br>
-`depcheck`
+`check-deprecations`
 
 ## Changing the Configuration Mode
 
@@ -27,8 +27,8 @@ You can change the mode in two ways:
    - **error:** Will log deprecated dependencies as errors and exit the process with a non-zero exit code.
 2. **Via Environment Variable:**
    You can override the configuration by setting the MODE environment variable before running the utility. The commands are as follows:
-   - `MODE=warning depcheck`
-   - `MODE=error depcheck`
+   - `MODE=warning check-deprecations`
+   - `MODE=error check-deprecations`
 
 ## Example Output
 
