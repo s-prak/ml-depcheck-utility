@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-const { runDependencyCheck } = require('../src/index');
-runDependencyCheck();
+const { runDependencyCheck } = require('../src/index')
+runDependencyCheck()

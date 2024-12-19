@@ -6,9 +6,6 @@
   "bin": {
     "check-deprecations": "./bin/cli.js"
   },
-  "scripts": {
-    "test": "echo \"no test specified\" "
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mojaloop/ml-depcheck-utility.git"
@@ -25,5 +22,28 @@
   "homepage": "https://github.com/mojaloop/ml-depcheck-utility#readme",
   "publishConfig": {
     "@mojaloop:registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "pretest": "npm run lint",
+    "standard": "npx standard",
+    "standard:fix": "npm run standard -- --fix",
+    "lint": "npm run standard",
+    "lint:fix": "npm run standard:fix",
+    "test": "npm run test:unit",
+    "test:header": "true",
+    "test:trans": "true",
+    "test:unit": "true",
+    "test:xunit": "true",
+    "test:unit:header": "true",
+    "test:coverage": "true",
+    "test:coverage-check": "true",
+    "test:functional": "true",
+    "test:integration": "true",
+    "audit:fix": "npm audit fix",
+    "audit:check": "true",
+    "dep:check": "npx ncu -e 2",
+    "dep:update": "npx ncu -u",
+    "release": "npx standard-version --no-verify --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
+    "snapshot": "npx standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   }
 }
