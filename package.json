@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/mojaloop/ml-depcheck-utility#readme",
   "publishConfig": {
-    "@mojaloop:registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "pretest": "npm run lint",
