@@ -29,8 +29,8 @@ const configPath = path.resolve(__dirname, '../config/default.json')
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 
 const mode = process.env.MODE || config.mode
-
 let count = 0; // Counter for deprecated packages
+let output="";
 
 function getDependencies(checkTransitive = false) {
     const args = checkTransitive ? ["ls", "--all", "--json"] : ["ls", "--json"];
@@ -44,7 +44,7 @@ async function checkPackage(pkgName, version, level) {
         const viewOutput = viewProcess.stdout;
 
         if (!viewOutput.trim()) {
-            console.log(`UNKNOWN: ${pkgName}@${version}`);
+            output+=`UNKNOWN: ${pkgName}@${version}\n`;
             return;
         }
 
@@ -52,11 +52,11 @@ async function checkPackage(pkgName, version, level) {
 
         if (packageInfo.deprecated) {
             count++;
-            console.log(`${count}: ${pkgName}@${version} \n\tReason: ${packageInfo.deprecated}`);
+            output+=`${count}: ${pkgName}@${version} \n\tReason: ${packageInfo.deprecated}\n`;
 
         }
     } catch (err) {
-        console.error(`Error checking ${pkgName}@${version}:`, err.message);
+        output+=err.message;
     }
 }
 
@@ -73,6 +73,7 @@ function getAllPackages(deps, collected = {}) {
 
 async function checkDependencies() {
     console.log("\x1b[34mChecking root dependencies...\x1b[0m");
+    output="";
     const rootDependencies = getDependencies(false);
     const rootPackageList = Object.entries(rootDependencies).map(([name, info]) => `${name}@${info.version}`);
 
@@ -82,21 +83,22 @@ async function checkDependencies() {
     }));
     if(mode=='warning'){
         if (count > 0) {
-            console.log('\x1b[33mWARNING!! Deprecated results found at root level.\n\x1b[0m');
+            output+='\x1b[33mWARNING!! Deprecated results found at root level.\n\x1b[0m';
         } else {
-            console.log('\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m');
+            output+='\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m';
         }
     }
     else{
         if (count > 0) {
-            console.log('\x1b[31mERROR!! Deprecated results found at root level.\n\x1b[0m');
+            output+='\x1b[31mERROR!! Deprecated results found at root level.\n\x1b[0m';
         } else {
-            console.log('\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m');
+            output+='\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m';
         }
     }
-    
+    console.log(output);
 
     console.log("\x1b[34m\nChecking all transitive dependencies...\x1b[0m");
+    output="";
     const allDependencies = getDependencies(true);
     const allPackageList = getAllPackages(allDependencies);
 
@@ -107,18 +109,19 @@ async function checkDependencies() {
 
     if(mode=='warning'){
         if (count > 0) {
-            console.log('\x1b[33mWARNING!! Deprecated results found in dependencies.\n\x1b[0m');
+            output+='\x1b[33mWARNING!! Deprecated results found in dependencies.\n\x1b[0m';
         } else {
-            console.log('\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m');
+            output+='\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m';
         }
     }
     else{
         if (count > 0) {
-            console.log('\x1b[31mERROR!! Deprecated results found in dependencies.\n\x1b[0m');
+            output+='\x1b[31mERROR!! Deprecated results found in dependencies.\n\x1b[0m';
         } else {
-            console.log('\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m');
+            output+='\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m';
         }
     }
+    console.log(output);
    
 
     if (mode === "error" && count > 0) {
