@@ -32,7 +32,6 @@ const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 const mode = process.env.MODE || config.mode
 
 function getDependencies(checkTransitive = false) {
-    const { spawnSync } = require("child_process");
     const args = checkTransitive ? ["ls", "--all", "--json"] : ["ls", "--json"];
     const output = spawnSync("npm", args, { encoding: "utf8" }).stdout;
     return JSON.parse(output).dependencies || {};
