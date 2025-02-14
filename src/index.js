@@ -143,4 +143,6 @@ async function checkDependencies() {
     }
 }
 
-checkDependencies();
+module.exports = {
+    checkDependencies
+}
