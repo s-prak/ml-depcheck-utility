@@ -30,6 +30,8 @@ const configPath = path.resolve(__dirname, '../config/default.json')
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 
 const mode = process.env.MODE || config.mode
+let count=0
+let output=""
 
 function getDependencies(checkTransitive = false) {
     const args = checkTransitive ? ["ls", "--all", "--json"] : ["ls", "--json"];
