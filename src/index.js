@@ -24,124 +24,126 @@
 const { spawnSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const https = require("https");
+const https = require('https')
 
 const configPath = path.resolve(__dirname, '../config/default.json')
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 
 const mode = process.env.MODE || config.mode
+let count = 0
+let output = ''
 
-function getDependencies(checkTransitive = false) {
-    const args = checkTransitive ? ["ls", "--all", "--json"] : ["ls", "--json"];
-    const output = spawnSync("npm", args, { encoding: "utf8" }).stdout;
-    return JSON.parse(output).dependencies || {};
+function getDependencies (checkTransitive = false) {
+  const args = checkTransitive ? ['ls', '--all', '--json'] : ['ls', '--json']
+  const output = spawnSync('npm', args, { encoding: 'utf8' }).stdout
+  return JSON.parse(output).dependencies || {}
 }
 
-async function fetchPackageMetadata(pkgName,version) {
-    return new Promise((resolve, reject) => {
-        const url = `https://registry.npmjs.org/${pkgName}/${version}`;
-        https.get(url, (res) => {
-            let data = "";
+async function fetchPackageMetadata (pkgName, version) {
+  return new Promise((resolve, reject) => {
+    const url = `https://registry.npmjs.org/${pkgName}/${version}`
+    https.get(url, (res) => {
+      let data = ''
 
-            res.on("data", (chunk) => {
-                data += chunk;
-            });
+      res.on('data', (chunk) => {
+        data += chunk
+      })
 
-            res.on("end", () => {
-                try {
-                    resolve(JSON.parse(data));
-                } catch (error) {
-                    reject(new Error(`Failed to parse response for ${pkgName}`));
-                }
-            });
-        }).on("error", (error) => {
-            reject(new Error(`Failed to fetch metadata for ${pkgName}: ${error.message}`));
-        });
-    });
-}
-
-async function checkPackage(pkgName, version, level) {
-    try {
-        const packageData = await fetchPackageMetadata(pkgName,version);
-        const deprecatedMessage = packageData.deprecated || null;
-
-        if (deprecatedMessage) { // If a deprecation message exists
-            count++;
-            output += `${count}: ${pkgName}@${version} \n\tReason: ${deprecatedMessage}\n\n`;
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data))
+        } catch (error) {
+          reject(new Error(`Failed to parse response for ${pkgName}`))
         }
-    } catch (err) {
-        output += `Error checking ${pkgName}@${version}: ${err.message}\n`;
-    }
+      })
+    }).on('error', (error) => {
+      reject(new Error(`Failed to fetch metadata for ${pkgName}: ${error.message}`))
+    })
+  })
 }
 
-function getAllPackages(deps, collected = []) {
-    const seen = new Set(collected.map(pkg => `${pkg.name}@${pkg.version}`)); // Track seen packages
+async function checkPackage (pkgName, version, level) {
+  try {
+    const packageData = await fetchPackageMetadata(pkgName, version)
+    const deprecatedMessage = packageData.deprecated || null
 
-    for (const [name, info] of Object.entries(deps)) {
-        const version = info.version;
-        const packageKey = `${name}@${version}`;
-
-        if (name && version && !seen.has(packageKey)) {
-            collected.push({ name, version });
-            seen.add(packageKey);
-
-            if (info.dependencies) getAllPackages(info.dependencies, collected);
-        }
+    if (deprecatedMessage) { // If a deprecation message exists
+      count++
+      output += `${count}: ${pkgName}@${version} \n\tReason: ${deprecatedMessage}\n\n`
     }
-    return collected;
+  } catch (err) {
+    output += `Error checking ${pkgName}@${version}: ${err.message}\n`
+  }
 }
 
-async function checkDependencies() {
-    console.log("\x1b[34mChecking root dependencies...\x1b[0m\n");
-    output = "";
-    const rootDependencies = getDependencies(false);
-    const rootPackageList = Object.entries(rootDependencies).map(([name, info]) => ({
-        name: name,
-        version: info.version
-      }));
+function getAllPackages (deps, collected = []) {
+  const seen = new Set(collected.map(pkg => `${pkg.name}@${pkg.version}`)) // Track seen packages
 
-    await Promise.all(rootPackageList.map(({ name, version }) => 
-        checkPackage(name, version, "root")
-    ));
+  for (const [name, info] of Object.entries(deps)) {
+    const version = info.version
+    const packageKey = `${name}@${version}`
 
-    if (mode === 'warning') {
-        output += count > 0
-            ? '\x1b[33mWARNING!! Deprecated results found at root level.\n\x1b[0m\n'
-            : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n';
-    } else {
-        output += count > 0
-            ? '\x1b[31mERROR!! Deprecated results found at root level.\n\x1b[0m\n'
-            : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n';
+    if (name && version && !seen.has(packageKey)) {
+      collected.push({ name, version })
+      seen.add(packageKey)
+
+      if (info.dependencies) getAllPackages(info.dependencies, collected)
     }
+  }
+  return collected
+}
 
-    console.log(output);
+async function checkDependencies () {
+  console.log('\x1b[34mChecking root dependencies...\x1b[0m\n')
+  output = ''
+  const rootDependencies = getDependencies(false)
+  const rootPackageList = Object.entries(rootDependencies).map(([name, info]) => ({
+    name,
+    version: info.version
+  }))
 
-    console.log("\x1b[34m\nChecking all transitive dependencies...\x1b[0m\n");
-    output = "";
-    const allDependencies = getDependencies(true);
-    const allPackageList = getAllPackages(allDependencies);
+  await Promise.all(rootPackageList.map(({ name, version }) =>
+    checkPackage(name, version, 'root')
+  ))
 
-    await Promise.all(allPackageList.map(({ name, version }) => 
-        checkPackage(name, version, "transitive")
-    ));
+  if (mode === 'warning') {
+    output += count > 0
+      ? '\x1b[33mWARNING!! Deprecated results found at root level.\n\x1b[0m\n'
+      : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n'
+  } else {
+    output += count > 0
+      ? '\x1b[31mERROR!! Deprecated results found at root level.\n\x1b[0m\n'
+      : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n'
+  }
 
-    if (mode === 'warning') {
-        output += count > 0
-            ? '\x1b[33mWARNING!! Deprecated results found in dependencies.\n\x1b[0m\n'
-            : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n';
-    } else {
-        output += count > 0
-            ? '\x1b[31mERROR!! Deprecated results found in dependencies.\n\x1b[0m\n'
-            : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n';
-    }
+  console.log(output)
 
-    console.log(output);
+  console.log('\x1b[34m\nChecking all transitive dependencies...\x1b[0m\n')
+  output = ''
+  const allDependencies = getDependencies(true)
+  const allPackageList = getAllPackages(allDependencies)
 
-    if (mode === "error" && count > 0) {
-        process.exit(1);
-    }
+  await Promise.all(allPackageList.map(({ name, version }) =>
+    checkPackage(name, version, 'transitive')
+  ))
+
+  if (mode === 'warning') {
+    output += count > 0
+      ? '\x1b[33mWARNING!! Deprecated results found in dependencies.\n\x1b[0m\n'
+      : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n'
+  } else {
+    output += count > 0
+      ? '\x1b[31mERROR!! Deprecated results found in dependencies.\n\x1b[0m\n'
+      : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n'
+  }
+
+  console.log(output)
+
+  if (mode === 'error' && count > 0) {
+    process.exit(1)
+  }
 }
 
 module.exports = {
-    checkDependencies
+  checkDependencies
 }
