@@ -12,6 +12,8 @@ This utility provides a script to scan the dependencies and transitive dependenc
 
 - **Configurable Mode:** Choose between warning or error modes using configuration or environment variables.
 
+- **Reason:** Each deprecated dependency includes a reason, often suggesting alternative packages.
+
 ## Usage
 
 You can run the utility directly from the command line once it is installed.<br>
@@ -36,12 +38,14 @@ You can change the mode in two ways:
 
 ```
 Checking dependencies at root level...
-1. @example/package1 DEPRECATED
+1. @example/package1
+   Reason:
 
 WARNING!! Deprecated results found at root level.
 
-Checking all dependencies (including transitive)...
-1. @example/package2 DEPRECATED
+Checking all transitive dependencies...
+1. @example/package2
+   Reason:
 
 WARNING!! Deprecated results found in dependencies.
 ```
@@ -50,12 +54,14 @@ WARNING!! Deprecated results found in dependencies.
 
 ```
 Checking dependencies at root level...
-1. @example/package1 DEPRECATED
+1. @example/package1
+   Reason:
 
 ERROR!! Deprecated results found at root level.
 
-Checking all dependencies (including transitive)...
-1. @example/package2 DEPRECATED
+Checking all transitive dependencies...
+1. @example/package2
+   Reason:
 
 ERROR!! Deprecated results found in dependencies.
 ```
@@ -66,6 +72,6 @@ ERROR!! Deprecated results found in dependencies.
 Checking dependencies at root level...
 SUCCESS: No deprecated packages found at root level! Congos!!
 
-Checking all dependencies (including transitive)...
+Checking all transitive dependencies...
 SUCCESS: No deprecated packages found! Congos!!
 ```
