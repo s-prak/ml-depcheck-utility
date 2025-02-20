@@ -8,6 +8,8 @@ This utility provides a script to scan the dependencies and transitive dependenc
 
 - **Transitive Dependency Check:** Recursively checks all nested dependencies for deprecation.
 
+- **Identifies Dev and Functional Dependencies:** Differentiates between development and functional dependencies.
+
 - **CLI Integration:** Easily run the utility from the command line.
 
 - **Configurable Mode:** Choose between warning or error modes using configuration or environment variables.
@@ -17,7 +19,8 @@ This utility provides a script to scan the dependencies and transitive dependenc
 ## Usage
 
 You can run the utility directly from the command line once it is installed.<br>
-`check-deprecations`
+`npm install @mojaloop/ml-depcheck-utility`<br>
+`check-deprecations`<br>
 
 ## Changing the Configuration Mode
 
@@ -37,41 +40,63 @@ You can change the mode in two ways:
 **Mode: warning**
 
 ```
-Checking dependencies at root level...
+Starting dependency check
+
+Checking root functional dependencies...
 1. @example/package1
    Reason:
 
-WARNING!! Deprecated results found at root level.
-
-Checking all transitive dependencies...
+Checking root dev dependencies...
 1. @example/package2
    Reason:
 
-WARNING!! Deprecated results found in dependencies.
+Checking transitive functional dependecies...
+1. @example/package3
+   Reason:
+
+Checking transitive dev dependecies...
+1. @example/package4
+   Reason:
+
+WARNING!! Found 4 deprecated dependencies.
 ```
 
 **Mode: error**
 
 ```
-Checking dependencies at root level...
+Starting dependency check
+
+Checking root functional dependencies...
 1. @example/package1
    Reason:
 
-ERROR!! Deprecated results found at root level.
-
-Checking all transitive dependencies...
+Checking root dev dependencies...
 1. @example/package2
    Reason:
 
-ERROR!! Deprecated results found in dependencies.
+Checking transitive functional dependecies...
+1. @example/package3
+   Reason:
+
+Checking transitive dev dependecies...
+1. @example/package4
+   Reason:
+
+Error!! Found 4 deprecated dependencies.
 ```
 
 **Success Case:**
 
 ```
-Checking dependencies at root level...
-SUCCESS: No deprecated packages found at root level! Congos!!
+Starting dependency check
 
-Checking all transitive dependencies...
-SUCCESS: No deprecated packages found! Congos!!
+Checking root functional dependencies...
+
+Checking root dev dependencies...
+
+Checking transitive functional dependecies...
+
+Checking transitive dev dependecies...
+
+CONGOS!!! No deprecated dependencies are found!
 ```
