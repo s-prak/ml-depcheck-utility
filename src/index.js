@@ -21,8 +21,12 @@
  ------------
 */
 
+
 const fs = require('fs')
 const pacote = require('pacote');
+
+const configPath = path.resolve(__dirname, '../config/default.json')
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 
 const mode = process.env.MODE || config.mode
 
@@ -139,3 +143,6 @@ async function checkDependencies() {
 module.exports = {
   checkDependencies
 }
+
+
+
