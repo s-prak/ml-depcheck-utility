@@ -46,14 +46,14 @@ const GREEN = "\x1b[32m";
 let totalDeprecatedCount = 0; 
 
 //Checks if a given package is deprecated by fetching its manifest using pacote
-async function checkDeprecated(package) {
+async function checkDeprecated(pkg) {
     try {
-        const manifest = await pacote.manifest(package);
+        const manifest = await pacote.manifest(pkg);
         if (manifest.deprecated) {
-            return `${package} \n${manifest.deprecated}\n\n`; 
+            return `${pkg} \n${manifest.deprecated}\n\n`; 
         }
     } catch (err) {
-        return `Error checking ${package}: ${err.message}\n\n`;
+        return `Error checking ${pkg}: ${err.message}\n\n`;
     }
     return null; 
 }
