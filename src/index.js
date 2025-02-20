@@ -22,7 +22,6 @@
 */
 
 const fs = require('fs')
-const path = require('path')
 const pacote = require('pacote');
 
 const mode = process.env.MODE || config.mode
