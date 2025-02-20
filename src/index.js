@@ -21,127 +21,120 @@
  ------------
 */
 
-const { spawnSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const https = require('https')
-
-const configPath = path.resolve(__dirname, '../config/default.json')
-const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+const pacote = require('pacote');
 
 const mode = process.env.MODE || config.mode
-let count = 0
-let output = ''
 
-function getDependencies (checkTransitive = false) {
-  const args = checkTransitive ? ['ls', '--all', '--json'] : ['ls', '--json']
-  const output = spawnSync('npm', args, { encoding: 'utf8' }).stdout
-  return JSON.parse(output).dependencies || {}
-}
+const packageLockJson = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
 
-async function fetchPackageMetadata (pkgName, version) {
-  return new Promise((resolve, reject) => {
-    const url = `https://registry.npmjs.org/${pkgName}/${version}`
-    https.get(url, (res) => {
-      let data = ''
+let processedPackages = new Set();
+let rootPackages = {};
+let rootDevPackages = {};
 
-      res.on('data', (chunk) => {
-        data += chunk
-      })
+const BLUE = "\x1b[34m";
+const RESET = "\x1b[0m";
+const RED = "\x1b[31m";
+const YELLOW = "\x1b[33m";
+const GREEN = "\x1b[32m";
 
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(data))
-        } catch (error) {
-          reject(new Error(`Failed to parse response for ${pkgName}`))
+
+let totalDeprecatedCount = 0; 
+
+//Checks if a given package is deprecated by fetching its manifest using pacote
+async function checkDeprecated(package) {
+    try {
+        const manifest = await pacote.manifest(package);
+        if (manifest.deprecated) {
+            return `${package} \n${manifest.deprecated}\n\n`; 
         }
-      })
-    }).on('error', (error) => {
-      reject(new Error(`Failed to fetch metadata for ${pkgName}: ${error.message}`))
-    })
-  })
-}
-
-async function checkPackage (pkgName, version, level) {
-  try {
-    const packageData = await fetchPackageMetadata(pkgName, version)
-    const deprecatedMessage = packageData.deprecated || null
-
-    if (deprecatedMessage) { // If a deprecation message exists
-      count++
-      output += `${count}: ${pkgName}@${version} \n\tReason: ${deprecatedMessage}\n\n`
+    } catch (err) {
+        return `Error checking ${package}: ${err.message}\n\n`;
     }
-  } catch (err) {
-    output += `Error checking ${pkgName}@${version}: ${err.message}\n`
-  }
+    return null; 
 }
 
-function getAllPackages (deps, collected = []) {
-  const seen = new Set(collected.map(pkg => `${pkg.name}@${pkg.version}`)) // Track seen packages
+//Processes a given set of dependencies (either root-level or transitive)
+//Differentiates between functional and dev dependencies and checks for deprecation.
+async function processDependencies(dependencies, root = false, dev = false) {
+    if (!dependencies) return;
 
-  for (const [name, info] of Object.entries(deps)) {
-    const version = info.version
-    const packageKey = `${name}@${version}`
+    let results = []; // Collect results for each section
 
-    if (name && version && !seen.has(packageKey)) {
-      collected.push({ name, version })
-      seen.add(packageKey)
+    if (!root) {
+        let transitiveFunctionalDependencies = [];
+        let transitiveDevDependencies = [];
 
-      if (info.dependencies) getAllPackages(info.dependencies, collected)
+        for (const packageName of Object.keys(dependencies)) {
+            const name = packageName.split('node_modules/').pop();
+            const packageInfo = dependencies[packageName];
+            const version = packageInfo.version;
+            const pkg = `${name}@${version}`;
+
+            if (!processedPackages.has(pkg)) {
+                processedPackages.add(pkg);
+                if (packageInfo.dev) {
+                    transitiveDevDependencies.push(pkg);
+                } else {
+                    transitiveFunctionalDependencies.push(pkg);
+                }
+            }
+        }
+
+        console.log(`${BLUE}\nChecking transitive functional dependencies...${RESET}`);
+        results = await Promise.all(transitiveFunctionalDependencies.map(pkg => checkDeprecated(pkg)));
+        results = results.filter(Boolean);
+        if (results.length) {
+            totalDeprecatedCount += results.length;
+            console.log(results.map((r, i) => `${i + 1}. ${r}`).join(""));
+        }
+
+        console.log(`${BLUE}\nChecking transitive dev dependencies...${RESET}`);
+        results = await Promise.all(transitiveDevDependencies.map(pkg => checkDeprecated(pkg)));
+        results = results.filter(Boolean);
+        if (results.length) {
+            totalDeprecatedCount += results.length;
+            console.log(results.map((r, i) => `${i + 1}. ${r}`).join(""));
+        }
+
+    } else {
+        console.log(dev ? `${BLUE}\nChecking root dev dependencies...${RESET}` : `${BLUE}\nChecking root functional dependencies...${RESET}`);
+
+        results = await Promise.all(
+            Object.entries(dependencies).map(([name, version]) => checkDeprecated(`${name}@${version}`))
+        );
+        results = results.filter(Boolean);
+        if (results.length) {
+            totalDeprecatedCount += results.length;
+            console.log(results.map((r, i) => `${i + 1}. ${r}`).join(""));
+        }
     }
-  }
-  return collected
 }
 
-async function checkDependencies () {
-  console.log('\x1b[34mChecking root dependencies...\x1b[0m\n')
-  output = ''
-  const rootDependencies = getDependencies(false)
-  const rootPackageList = Object.entries(rootDependencies).map(([name, info]) => ({
-    name,
-    version: info.version
-  }))
+//Main function to check all dependencies, logs the output
+async function checkDependencies() {
+    console.log(`${BLUE}\nStarting dependency check...${RESET}`);
 
-  await Promise.all(rootPackageList.map(({ name, version }) =>
-    checkPackage(name, version, 'root')
-  ))
+    rootPackages = packageLockJson.packages[""].dependencies || {};
+    rootDevPackages = packageLockJson.packages[""].devDependencies || {};
 
-  if (mode === 'warning') {
-    output += count > 0
-      ? '\x1b[33mWARNING!! Deprecated results found at root level.\n\x1b[0m\n'
-      : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n'
-  } else {
-    output += count > 0
-      ? '\x1b[31mERROR!! Deprecated results found at root level.\n\x1b[0m\n'
-      : '\x1b[32mSUCCESS: No deprecated packages found at root level! Congos!!\n\x1b[0m\n'
-  }
+    await processDependencies(rootPackages, true, false);
+    await processDependencies(rootDevPackages, true, true);
 
-  console.log(output)
+    const packages = packageLockJson.packages;
+    await processDependencies(packages, false);
 
-  console.log('\x1b[34m\nChecking all transitive dependencies...\x1b[0m\n')
-  output = ''
-  const allDependencies = getDependencies(true)
-  const allPackageList = getAllPackages(allDependencies)
-
-  await Promise.all(allPackageList.map(({ name, version }) =>
-    checkPackage(name, version, 'transitive')
-  ))
-
-  if (mode === 'warning') {
-    output += count > 0
-      ? '\x1b[33mWARNING!! Deprecated results found in dependencies.\n\x1b[0m\n'
-      : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n'
-  } else {
-    output += count > 0
-      ? '\x1b[31mERROR!! Deprecated results found in dependencies.\n\x1b[0m\n'
-      : '\x1b[32mSUCCESS: No deprecated packages found! Congos!!\x1b[0m\n'
-  }
-
-  console.log(output)
-
-  if (mode === 'error' && count > 0) {
-    process.exit(1)
-  }
+    if (mode === "error" && totalDeprecatedCount > 1) {
+        console.error(`${RED}\nERROR!! Found ${totalDeprecatedCount} deprecated dependencies.\n${RESET}`);
+        process.exit(1);
+    } 
+    else if(mode === "warning" && totalDeprecatedCount>1){
+        console.log(`${YELLOW}\nWARNING!! Found ${totalDeprecatedCount} deprecated dependencies.\n${RESET}`);
+    }
+    else if(totalDeprecatedCount ==0 ){
+        console.log(`${GREEN}\nCONGOS!!! No deprecated dependencies are found!\n${RESET}`);
+    }
 }
 
 module.exports = {
