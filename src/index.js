@@ -52,7 +52,7 @@ async function checkDeprecated (pkg) {
       return `${pkg} \n${manifest.deprecated}\n\n`
     }
   } catch (err) {
-    return `Error checking ${pkg}: ${err.message}\n\n`
+    return `Error checking ${pkg}: ${err.message}\nPlease update to the latest version.\n\n`
   }
   return null
 }
@@ -69,6 +69,8 @@ async function processDependencies (dependencies, root = false, dev = false) {
     const transitiveDevDependencies = []
 
     for (const packageName of Object.keys(dependencies)) {
+
+      if(packageName === "") continue;
       const name = packageName.split('node_modules/').pop()
       const packageInfo = dependencies[packageName]
       const version = packageInfo.version
