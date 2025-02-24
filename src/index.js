@@ -69,8 +69,7 @@ async function processDependencies (dependencies, root = false, dev = false) {
     const transitiveDevDependencies = []
 
     for (const packageName of Object.keys(dependencies)) {
-
-      if(packageName === "") continue;
+      if (packageName === '') continue
       const name = packageName.split('node_modules/').pop()
       const packageInfo = dependencies[packageName]
       const version = packageInfo.version
