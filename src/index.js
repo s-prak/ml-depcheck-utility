@@ -45,14 +45,20 @@ const GREEN = '\x1b[32m'
 let totalDeprecatedCount = 0
 
 // Checks if a given package is deprecated by fetching its manifest using pacote
-async function checkDeprecated (pkg) {
+async function checkDeprecated (pkg, resolved) {
   try {
     const manifest = await pacote.manifest(pkg)
     if (manifest.deprecated) {
       return `${pkg} \n${manifest.deprecated}\n\n`
     }
   } catch (err) {
-    return `Error checking ${pkg}: ${err.message}\nPlease update to the latest version.\n\n`
+    const parts = resolved.split('/')
+    const packageName = parts[parts.indexOf('registry.npmjs.org') + 1]
+    const version = pkg.split('@').pop()
+    const manifest = await pacote.manifest(`${packageName}@${version}`)
+    if (manifest.deprecated) {
+      return `${pkg} alias:${packageName}\n${manifest.deprecated}\n\n`
+    }
   }
   return null
 }
@@ -73,20 +79,21 @@ async function processDependencies (dependencies, root = false, dev = false) {
       const name = packageName.split('node_modules/').pop()
       const packageInfo = dependencies[packageName]
       const version = packageInfo.version
+      const resolved = packageInfo.resolved
       const pkg = `${name}@${version}`
 
       if (!processedPackages.has(pkg)) {
         processedPackages.add(pkg)
         if (packageInfo.dev) {
-          transitiveDevDependencies.push(pkg)
+          transitiveDevDependencies.push({ pkg, resolved })
         } else {
-          transitiveFunctionalDependencies.push(pkg)
+          transitiveFunctionalDependencies.push({ pkg, resolved })
         }
       }
     }
 
     console.log(`${BLUE}\nChecking transitive functional dependencies...${RESET}`)
-    results = await Promise.all(transitiveFunctionalDependencies.map(pkg => checkDeprecated(pkg)))
+    results = await Promise.all(transitiveFunctionalDependencies.map(({ pkg, resolved }) => checkDeprecated(pkg, resolved)))
     results = results.filter(Boolean)
     if (results.length) {
       totalDeprecatedCount += results.length
@@ -94,7 +101,7 @@ async function processDependencies (dependencies, root = false, dev = false) {
     }
 
     console.log(`${BLUE}\nChecking transitive dev dependencies...${RESET}`)
-    results = await Promise.all(transitiveDevDependencies.map(pkg => checkDeprecated(pkg)))
+    results = await Promise.all(transitiveDevDependencies.map(({ pkg, resolved }) => checkDeprecated(pkg, resolved)))
     results = results.filter(Boolean)
     if (results.length) {
       totalDeprecatedCount += results.length
@@ -104,7 +111,10 @@ async function processDependencies (dependencies, root = false, dev = false) {
     console.log(dev ? `${BLUE}\nChecking root dev dependencies...${RESET}` : `${BLUE}\nChecking root functional dependencies...${RESET}`)
 
     results = await Promise.all(
-      Object.entries(dependencies).map(([name, version]) => checkDeprecated(`${name}@${version}`))
+      Object.entries(dependencies).map(([name, version]) => {
+        const resolved = packageLockJson.packages[`node_modules/${name}`]?.resolved || 'Unknown' // CHANGED: Fetch resolved for root dependencies
+        return checkDeprecated(`${name}@${version}`, resolved)
+      })
     )
     results = results.filter(Boolean)
     if (results.length) {
