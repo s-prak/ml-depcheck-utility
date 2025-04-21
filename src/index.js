@@ -52,12 +52,16 @@ async function checkDeprecated (pkg, resolved) {
       return `${pkg} \n${manifest.deprecated}\n\n`
     }
   } catch (err) {
-    const parts = resolved.split('/')
-    const packageName = parts[parts.indexOf('registry.npmjs.org') + 1]
-    const version = pkg.split('@').pop()
-    const manifest = await pacote.manifest(`${packageName}@${version}`)
-    if (manifest.deprecated) {
-      return `${pkg} alias:${packageName}\n${manifest.deprecated}\n\n`
+    try {
+      const parts = resolved.split('/')
+      const packageName = parts[parts.indexOf('registry.npmjs.org') + 1]
+      const version = pkg.split('@').pop()
+      const manifest = await pacote.manifest(`${packageName}@${version}`)
+      if (manifest.deprecated) {
+        return `${pkg} alias:${packageName}\n${manifest.deprecated}\n\n`
+      }
+    } catch (innerErr) {
+      return null
     }
   }
   return null
