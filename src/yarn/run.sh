@@ -36,9 +36,3 @@ cd $current_dir
 cd ./src/yarn
 node update-packages.js
 cd $current_dir
-
-# #Check the status to packages - deprecated or active 
-# cd ./oss-stats/sbom-aggregate/yarn
-# node deprecated.js
-
-

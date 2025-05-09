@@ -34,12 +34,3 @@ mkdir -p ./data/sbom-components-csv
 cd ./src/npm
 bash automate-components-csv.sh 
 cd $current_dir
-
-# #Check the status to packages - deprecated or active 
-# mkdir ./oss-stats/sbom-aggregate/sbom-components-csv-deprecated
-# cd ./oss-stats/sbom-aggregate/npm
-# node deprecated.js
-
-# #Map unique dependencies accross all services and identify versions
-# cd ./oss-stats/sbom-aggregate/npm
-# node map.js 
