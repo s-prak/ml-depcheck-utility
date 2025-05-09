@@ -14,9 +14,9 @@ fi
 
 current_dir=$(pwd)
 
-bash ./src/npm/run.sh
+bash ./src/npm/npm-overall.sh
 
-bash ./src/yarn/run.sh
+bash ./src/yarn/yarn-overall.sh
 
 #Check the status to packages - deprecated or active 
 rm -rf ./data/sbom-components-csv-deprecated/*
