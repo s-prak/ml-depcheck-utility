@@ -47,6 +47,9 @@
     "snapshot": "npx standard-version --no-verify --skip.changelog --prerelease snapshot --releaseCommitMessageFormat 'chore(snapshot): {{currentTag}}'"
   },
   "dependencies": {
+    "csv-parser": "^3.2.0",
+    "csv-writer": "^1.6.0",
+    "node-fetch": "^3.3.2",
     "pacote": "^21.0.0"
   }
 }
