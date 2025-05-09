@@ -14,10 +14,6 @@ const __dirname = path.dirname(__filename);
 const inputDir = '../data/sbom-components-csv';
 const outputDir = '../data/sbom-components-csv-deprecated';
 
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-}
-
 // Concurrency limit — tweak this if needed
 const limit = pLimit(10);
 
