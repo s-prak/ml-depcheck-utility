@@ -123,7 +123,7 @@ The repositories to be included in the SBOM generation process can be configured
   **`config/repo-list.json`**
 - **Custom Repository List**: You can also pass a custom repository list file from the command line. For example:
   ```bash
-  bash src/run.sh custom-repos-list.json
+  bash src/generate-sbom.sh custom-repos-list.json
   ```
   This feature allows you to dynamically specify repositories for SBOM generation.
 
@@ -182,11 +182,11 @@ To use the SBOM generation tool, follow these steps:
    Execute the script to generate the SBOMs. You can use either the default repository list or provide a custom one:
    - **Using Default Repository List**:
      ```bash
-     bash src/run.sh
+     bash src/generate-sbom.sh
      ```
    - **Using Custom Repository List**:
      ```bash
-     bash src/run.sh custom-repos-list.json
+     bash src/generate-sbom.sh custom-repos-list.json
      ```
 
 ---

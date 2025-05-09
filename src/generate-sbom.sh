@@ -22,7 +22,7 @@ bash ./src/yarn/run.sh
 rm -rf ./data/sbom-components-csv-deprecated/*
 mkdir -p ./data/sbom-components-csv-deprecated
 cd ./src
-node deprecated.js
+node find-deprecated.js
 cd $current_dir
 
 #Append the last publish details
@@ -34,7 +34,7 @@ cd $current_dir
 
 #Map unique dependencies accross all services and identify versions
 cd ./src
-node map.js 
+node map-dependencies.js 
 cd $current_dir
 
 #Append last publish details 
