@@ -18,19 +18,19 @@ bash ./src/npm/npm-overall.sh
 
 bash ./src/yarn/yarn-overall.sh
 
-#Check the status to packages - deprecated or active 
-rm -rf ./data/sbom-components-csv-deprecated/*
-mkdir -p ./data/sbom-components-csv-deprecated
-cd ./src
-node find-deprecated.js
-cd $current_dir
+# #Check the status to packages - deprecated or active 
+# rm -rf ./data/sbom-components-csv-deprecated/*
+# mkdir -p ./data/sbom-components-csv-deprecated
+# cd ./src
+# node find-deprecated.js
+# cd $current_dir
 
-#Append the last publish details
-rm -rf ./data/sbom-repo-wise/*
-mkdir -p ./data/sbom-repo-wise
-cd ./src
-bash publish-details.sh
-cd $current_dir
+# #Append the last publish details
+# rm -rf ./data/sbom-repo-wise/*
+# mkdir -p ./data/sbom-repo-wise
+# cd ./src
+# bash publish-details.sh
+# cd $current_dir
 
 #Map unique dependencies accross all services and identify versions
 cd ./src
@@ -47,14 +47,14 @@ cd ./src
 node sbom-components-to-csv.js 
 cd $current_dir
 
-rm -rf ./data/npm
-rm -rf ./data/yarn
-rm -rf ./data/sbom-components-csv
-rm -rf ./data/sbom-components-csv-deprecated
-rm -rf ./data/sbom-dependencies-csv
-rm ./data/components-dependencies.csv
-rm ./data/dependency-services.csv
-rm ./data/dependencies-services-last-publish.csv
+# rm -rf ./data/npm
+# rm -rf ./data/yarn
+# rm -rf ./data/sbom-components-csv
+# rm -rf ./data/sbom-components-csv-deprecated
+# rm -rf ./data/sbom-dependencies-csv
+# rm ./data/components-dependencies.csv
+# rm ./data/dependency-services.csv
+# rm ./data/dependencies-services-last-publish.csv
 
 echo "Thank you for using our SBOM processing tool! 🎉
 

@@ -99,6 +99,25 @@ finalMap.forEach((values, dep) => {
     });
 });
 
+// Convert finalMap (Map<dependency, Map<version, Set<services>>>) to plain object
+const jsonObject = {};
+finalMap.delete("");
+
+finalMap.forEach((versionMap, dependency) => {
+    jsonObject[dependency] = {};
+
+    versionMap.forEach((servicesSet, version) => {
+        jsonObject[dependency][version] = Array.from(servicesSet); // Convert Set to Array
+    });
+});
+
+// Define path to save JSON
+const jsonFilePath = "../data/dependency-services.json";
+
+// Write to JSON file
+fs.writeFileSync(jsonFilePath, JSON.stringify(jsonObject, null, 2), 'utf8');
+console.log(`✅ Saved dependency-services mapping to ${jsonFilePath}`);
+
 //Define path to save csv 
 const csvFilePath = "../data/dependency-services.csv";
 fs.writeFileSync(csvFilePath, csvContent, 'utf8');
