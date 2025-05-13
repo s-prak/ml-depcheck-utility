@@ -2,14 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Input and output file paths
-const inputFile = './tmp/result-individual/SBOM.csv';
-const outputFile = './tmp/result-individual/SBOM.csv';
-
-// Ensure output directory exists
-const outputFolder = path.dirname(outputFilePath);
-if (!fs.existsSync(outputFolder)) {
-    fs.mkdirSync(outputFolder, { recursive: true });
-}
+const inputFilePath = './tmp/result-individual/SBOM.csv';
+const outputFilePath = './tmp/result-individual/SBOM.csv';
 
 // Function to process the CSV
 function processCsv(inputFilePath, outputFilePath) {
