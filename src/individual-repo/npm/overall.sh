@@ -17,7 +17,7 @@ xsltproc tmp/ml-depcheck-utility/src/individual-repo/npm/components.xslt "./tmp/
 node tmp/ml-depcheck-utility/src/individual-repo/npm/append-fields.js
 
 #Save the sbom generated
-mv /tmp/result-individual/SBOM-final.csv ./sbom.csv
+mv /tmp/result-individual/SBOM-final.csv sbom.csv
 
 #Delete files
 rm -rf ./tmp

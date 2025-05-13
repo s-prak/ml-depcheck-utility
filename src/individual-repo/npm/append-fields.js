@@ -55,7 +55,7 @@ fs.readFile(inputFile, 'utf8', async (err, data) => {
             return [...row, email, deprecated, reason, modified];
         } catch (error) {
             console.warn(`Failed for row: ${row[bomRefIndex]}`, error.message);
-            return [...row, '', 'error', error.message, ''];
+            return [...row, '', '', '', ''];
         }
     })));
 
