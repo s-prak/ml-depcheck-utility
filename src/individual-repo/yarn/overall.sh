@@ -4,11 +4,12 @@
 sudo yum install xsltproc
 
 #Install dependencies
-npm install --ignore-scripts --legacy-peer-deps --force
+yarn set version stable
+yarn install --mode=skip-build
 
 #Generate SBOM
 mkdir -p ./tmp/result-individual
-npx cyclonedx-npm --ignore-npm-errors --output-format "XML" --output-file "./tmp/result-individual/SBOM.xml"
+yarn dlx @cyclonedx/yarn-plugin-cyclonedx --of XML -o "./tmp/result-individual/SBOM.xml"
 
 #Convert SBOM into csv fornat
 xsltproc tmp/ml-depcheck-utility/src/individual-repo/yarn/components.xslt "./tmp/result-individual/SBOM.xml" > "./tmp/result-individual/SBOM.csv"
