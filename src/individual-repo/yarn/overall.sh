@@ -21,7 +21,7 @@ node tmp/ml-depcheck-utility/src/individual-repo/yarn/update-packages.js
 node tmp/ml-depcheck-utility/src/individual-repo/yarn/append-fields.js
 
 #Save the sbom generated
-mv /tmp/result-individual/SBOM-final.csv sbom.csv
+mv tmp/result-individual/SBOM-final.csv sbom.csv
 
 #Delete files
 rm -rf ./tmp
