@@ -26,7 +26,7 @@ fs.readFile(inputFile, 'utf8', async (err, data) => {
     }
 
     // Add new headers
-    const newHeaders = [...headers, 'author_email', 'deprecated_status', 'deprecation_reason', 'timestamp'];
+    const newHeaders = [...headers, 'author-email', 'deprecated-status', 'deprecation-reason', 'timestamp'];
 
     // Extract rows
     const rows = lines.slice(1).map(line => line.split(','));
