@@ -20,3 +20,10 @@ node tmp/ml-depcheck-utility/src/individual-repo/yarn/update-packages.js
 #Append fields to sbom - deprecated and last publish
 node tmp/ml-depcheck-utility/src/individual-repo/yarn/append-fields.js
 
+#Save the sbom generated
+mv /tmp/result-individual/SBOM-final.csv ./sbom.csv
+
+#Delete files
+rm -rf ./tmp
+
+[ -f sbom.csv ] && echo "🎉 Thank you! SBOM successfully generated and saved as sbom.csv" || echo "SBOM file not found. Please check for errors."
