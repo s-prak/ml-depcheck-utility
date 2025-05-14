@@ -117,15 +117,7 @@ This tool enables **comprehensive SBOM generation** for Mojaloop repositories. I
 
 ### 1. **Flexible Repository Inclusion**
 
-The repositories to be included in the SBOM generation process can be configured in two ways:
-
-- **Default Configuration**: The repositories are listed in the file:  
-  **`config/repo-list.json`**
-- **Custom Repository List**: You can also pass a custom repository list file from the command line. For example:
-  ```bash
-  bash src/generate-sbom.sh custom-repos-list.json
-  ```
-  This feature allows you to dynamically specify repositories for SBOM generation.
+The repositories to be included in the SBOM generation process can be configured in two ways: a default repository list and a custom repository list sent from the end user.
 
 ### 2. **Individual SBOMs for Each Repository**
 
