@@ -139,9 +139,6 @@ For every Mojaloop repository, a detailed SBOM is generated. It includes:
   - Author details
 - All **transitive dependencies** (dependencies of dependencies).
 
-The individual SBOMs are stored in:  
-**`data/sbom-repo-wise/`**
-
 ### 3. **Aggregated SBOM for All Repositories**
 
 At the end of the process, an aggregated SBOM is generated. This SBOM:
@@ -154,9 +151,6 @@ At the end of the process, an aggregated SBOM is generated. This SBOM:
   - License
   - Publish details
 
-The aggregated SBOM is stored in:  
-**`data/SBOM-aggregate.csv`**
-
 ---
 
 ## How to Use This Tool
@@ -167,8 +161,8 @@ To use the SBOM generation tool, follow these steps:
    Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/<your-repo-name>/sbom-generation-tool.git
-   cd sbom-generation-tool
+   git clone https://github.com/mojaloop/ml-depcheck-utility.git
+   cd ml-depcheck-utility
    ```
 
 2. **Install Dependencies**:
@@ -179,24 +173,31 @@ To use the SBOM generation tool, follow these steps:
    ```
 
 3. **Run the Tool**:
-   Execute the script to generate the SBOMs. You can use either the default repository list or provide a custom one:
-   - **Using Default Repository List**:
+   You can generate SBOMs using two modes:
+   - **For individual repositories**:Use this mode if you want to generate SBOMs for one repository at a time.
+     - **For npm-based project**:
+       ```bash
+       bash src/individual-repo/npm/generate-sbom.sh
+       ```
+     - **For yarn-based projects**:
+       ```bash
+       bash src/individual-repo/yarn/generate-sbom.sh
+       ```
+   - **Generate Aggregate SBOM for Multiple Repositories**: Use this mode to generate SBOMs for a list of repositories, either the default set or a custom list.
+     - **Using Default Repository List**:
      ```bash
-     bash src/generate-sbom.sh
+     bash src/aggregate/generate-sbom.sh
      ```
-   - **Using Custom Repository List**:
+     - **Using Custom Repository List**:
      ```bash
-     bash src/generate-sbom.sh custom-repos-list.json
+     bash src/aggregate/generate-sbom.sh custom-repos-list.json
      ```
 
 ---
 
 ## Output
 
-The results will be stored in the `data/` directory:
-
-- Individual SBOMs for each repository: **`data/sbom-repo-wise/`**
-- Aggregated SBOM for all repositories: **`data/SBOM-aggregate.csv`**
+The results will be stored in `sbom.csv` in the root directory:
 
 ---
 
