@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Install xslt processor
-sudo yum install xsltproc
+apk add --no-cache libxslt
 
 #Install dependencies
 npm install --ignore-scripts --legacy-peer-deps --force
@@ -17,7 +17,7 @@ xsltproc tmp/ml-depcheck-utility/src/individual-repo/npm/components.xslt "./tmp/
 node tmp/ml-depcheck-utility/src/individual-repo/npm/append-fields.js
 
 #Save the sbom generated
-mv tmp/result-individual/SBOM-final.csv sbom.csv
+mv tmp/result-individual/SBOM-final.csv sbom-npm.csv
 
 #Delete files
 rm -rf ./tmp

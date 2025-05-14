@@ -2,8 +2,6 @@
 
 json_file=$1  # The first argument passed to the script is the JSON file
 
-sudo apt install jq
-
 # Check if json_file is provided and the file exists
 mkdir -p ./data
 if [ -f "$json_file" ]; then

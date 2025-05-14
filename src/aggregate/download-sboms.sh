@@ -6,24 +6,42 @@ JSON_FILE="./data/repos-list.json"
 # Target directory for downloaded SBOMs
 TARGET_DIR="./data/sbom-csv"
 
-# Read repos array from the JSON file using jq
-REPOS=$(jq -r '.repos[]' "$JSON_FILE")
+# Create target directory if it doesn't exist
+mkdir -p "$TARGET_DIR"
 
-# Loop through each repo name
-for REPO in $REPOS; do
-  FILE_URL="https://raw.githubusercontent.com/mojaloop/$REPO/main/sbom.csv"
-  OUTPUT_FILE="$TARGET_DIR/${REPO}-sbom.csv"
+# Read npm and yarn arrays from the JSON file
+NPM_REPOS=$(jq -r '.npm[]' "$JSON_FILE")
+YARN_REPOS=$(jq -r '.yarn[]' "$JSON_FILE")
 
-  echo "Downloading sbom.csv from $REPO..."
+# Process npm repos
+for REPO in $NPM_REPOS; do
+  FILE_URL="https://raw.githubusercontent.com/mojaloop/$REPO/main/sbom-npm.csv"
+  OUTPUT_FILE="$TARGET_DIR/${REPO}-sbom-npm.csv"
 
-  # Download the sbom.csv file
+  echo "Downloading sbom-npm.csv from $REPO..."
   curl -s -f "$FILE_URL" -o "$OUTPUT_FILE"
 
   if [ $? -eq 0 ]; then
     echo "✔ Downloaded to $OUTPUT_FILE"
   else
-    echo "⚠ Failed to download sbom.csv from $REPO"
-    rm -f "$OUTPUT_FILE"  # Remove partial file if download failed
+    echo "⚠ Failed to download sbom-npm.csv from $REPO"
+    rm -f "$OUTPUT_FILE"
+  fi
+done
+
+# Process yarn repos
+for REPO in $YARN_REPOS; do
+  FILE_URL="https://raw.githubusercontent.com/mojaloop/$REPO/main/sbom-yarn.csv"
+  OUTPUT_FILE="$TARGET_DIR/${REPO}-sbom-yarn.csv"
+
+  echo "Downloading sbom-yarn.csv from $REPO..."
+  curl -s -f "$FILE_URL" -o "$OUTPUT_FILE"
+
+  if [ $? -eq 0 ]; then
+    echo "✔ Downloaded to $OUTPUT_FILE"
+  else
+    echo "⚠ Failed to download sbom-yarn.csv from $REPO"
+    rm -f "$OUTPUT_FILE"
   fi
 done
 

@@ -189,7 +189,11 @@ To use the SBOM generation tool, follow these steps:
 
 ## Output
 
-The results will be stored in `sbom.csv` in the root directory:
+The results will be stored in the root directory:
+
+- `sbom.csv` : aggregate sbom
+- `sbom-npm.csv` : sbom of a npm repository
+- `sbom-yarn.csv` : sbom of a yarn repository
 
 ---
 

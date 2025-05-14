@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Install xslt processor
-sudo yum install xsltproc
+apk add --no-cache libxslt
 
 #Install dependencies
 yarn set version stable
@@ -21,7 +21,7 @@ node tmp/ml-depcheck-utility/src/individual-repo/yarn/update-packages.js
 node tmp/ml-depcheck-utility/src/individual-repo/yarn/append-fields.js
 
 #Save the sbom generated
-mv tmp/result-individual/SBOM-final.csv sbom.csv
+mv tmp/result-individual/SBOM-final.csv sbom-yarn.csv
 
 #Delete files
 rm -rf ./tmp
