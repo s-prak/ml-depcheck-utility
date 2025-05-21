@@ -3,6 +3,9 @@
 #Install xslt processor
 apk add --no-cache libxslt
 
+# Get repo version from package.json
+REPO_VERSION=$(node -p "require('./tmp/ml-depcheck-utility/package.json').version")
+
 #Install dependencies
 npm install --ignore-scripts --legacy-peer-deps --force
 
@@ -16,8 +19,9 @@ xsltproc tmp/ml-depcheck-utility/src/individual-repo/npm/components.xslt "./tmp/
 #Append fields to sbom - deprecated and last publish
 node tmp/ml-depcheck-utility/src/individual-repo/npm/append-fields.js
 
-#Save the sbom generated
-mv tmp/result-individual/SBOM-final.csv sbom-npm.csv
+# Save the SBOM with version in filename
+FINAL_SBOM_NAME="sbom-npm-v$REPO_VERSION.csv"
+mv tmp/result-individual/SBOM-final.csv "$FINAL_SBOM_NAME"
 
 #Delete files
 rm -rf ./tmp

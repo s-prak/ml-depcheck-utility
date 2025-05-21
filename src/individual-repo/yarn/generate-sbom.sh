@@ -7,6 +7,9 @@ apk add --no-cache libxslt
 yarn set version stable
 yarn install --mode=skip-build
 
+# Get repo version from package.json
+REPO_VERSION=$(node -p "require('./tmp/ml-depcheck-utility/package.json').version")
+
 #Generate SBOM
 mkdir -p ./tmp/result-individual
 yarn dlx @cyclonedx/yarn-plugin-cyclonedx --of XML -o "./tmp/result-individual/SBOM.xml"
@@ -20,8 +23,9 @@ node tmp/ml-depcheck-utility/src/individual-repo/yarn/update-packages.js
 #Append fields to sbom - deprecated and last publish
 node tmp/ml-depcheck-utility/src/individual-repo/yarn/append-fields.js
 
-#Save the sbom generated
-mv tmp/result-individual/SBOM-final.csv sbom-yarn.csv
+# Save the SBOM with version in the filename
+FINAL_SBOM_NAME="sbom-yarn-v$REPO_VERSION.csv"
+mv tmp/result-individual/SBOM-final.csv "$FINAL_SBOM_NAME"
 
 #Delete files
 rm -rf ./tmp

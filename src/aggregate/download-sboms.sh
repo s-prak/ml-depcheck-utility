@@ -1,48 +1,53 @@
 #!/bin/bash
 
-# Path to the JSON file
-JSON_FILE="./data/repos-list.json"
+# GitHub org
+ORG="mojaloop"
 
-# Target directory for downloaded SBOMs
+# JSON config file
+JSON_FILE="./data/repos-list.json"
 TARGET_DIR="./data/sbom-csv"
 
-# Create target directory if it doesn't exist
 mkdir -p "$TARGET_DIR"
 
-# Read npm and yarn arrays from the JSON file
+# GitHub API base
+API_URL="https://api.github.com/repos"
+
+# Helper: Get SBOM file name from GitHub API for a given pattern
+get_sbom_file_name() {
+  local repo=$1
+  local pattern=$2
+
+  curl -s "$API_URL/$ORG/$repo/contents" | grep -oP "\"name\":\s*\"$pattern[^\"]*\.csv\"" | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
+# Parse arrays from JSON
 NPM_REPOS=$(jq -r '.npm[]' "$JSON_FILE")
 YARN_REPOS=$(jq -r '.yarn[]' "$JSON_FILE")
 
 # Process npm repos
 for REPO in $NPM_REPOS; do
-  FILE_URL="https://raw.githubusercontent.com/mojaloop/$REPO/main/sbom-npm.csv"
-  OUTPUT_FILE="$TARGET_DIR/${REPO}-sbom-npm.csv"
+  echo "⏳ Checking SBOM for $REPO (npm)..."
+  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom-npm")
 
-  echo "Downloading sbom-npm.csv from $REPO..."
-  curl -s -f "$FILE_URL" -o "$OUTPUT_FILE"
-
-  if [ $? -eq 0 ]; then
-    echo "✔ Downloaded to $OUTPUT_FILE"
+  if [ -n "$FILE_NAME" ]; then
+    curl -s -f -L "https://raw.githubusercontent.com/$ORG/$REPO/main/$FILE_NAME" -o "$TARGET_DIR/${REPO}-$FILE_NAME"
+    echo "✔ Downloaded to $TARGET_DIR/${REPO}-$FILE_NAME"
   else
-    echo "⚠ Failed to download sbom-npm.csv from $REPO"
-    rm -f "$OUTPUT_FILE"
+    echo "⚠ No sbom-npm CSV found for $REPO"
   fi
 done
 
 # Process yarn repos
 for REPO in $YARN_REPOS; do
-  FILE_URL="https://raw.githubusercontent.com/mojaloop/$REPO/main/sbom-yarn.csv"
-  OUTPUT_FILE="$TARGET_DIR/${REPO}-sbom-yarn.csv"
+  echo "⏳ Checking SBOM for $REPO (yarn)..."
+  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom-yarn")
 
-  echo "Downloading sbom-yarn.csv from $REPO..."
-  curl -s -f "$FILE_URL" -o "$OUTPUT_FILE"
-
-  if [ $? -eq 0 ]; then
-    echo "✔ Downloaded to $OUTPUT_FILE"
+  if [ -n "$FILE_NAME" ]; then
+    curl -s -f -L "https://raw.githubusercontent.com/$ORG/$REPO/main/$FILE_NAME" -o "$TARGET_DIR/${REPO}-$FILE_NAME"
+    echo "✔ Downloaded to $TARGET_DIR/${REPO}-$FILE_NAME"
   else
-    echo "⚠ Failed to download sbom-yarn.csv from $REPO"
-    rm -f "$OUTPUT_FILE"
+    echo "⚠ No sbom-yarn CSV found for $REPO"
   fi
 done
 
-echo "All done."
+echo "✅ All done."
