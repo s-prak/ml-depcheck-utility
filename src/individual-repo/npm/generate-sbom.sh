@@ -26,4 +26,5 @@ mv tmp/result-individual/SBOM-final.csv "$FINAL_SBOM_NAME"
 #Delete files
 rm -rf ./tmp
 
-[ -f sbom.csv ] && echo "🎉 Thank you! SBOM successfully generated and saved as sbom.csv" || echo "SBOM file not found. Please check for errors."
+# Check if SBOM was saved
+[ -f "$FINAL_SBOM_NAME" ] && echo "🎉 Thank you! SBOM successfully generated and saved as $FINAL_SBOM_NAME" || echo "SBOM file not found. Please check for errors."
