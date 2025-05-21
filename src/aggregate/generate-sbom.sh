@@ -21,6 +21,7 @@ node src/aggregate/map-dependencies.js
 
 # Save the file 
 mv ./data/sbom.csv sbom.csv
+mv ./data/sbom-csv ./sbom-repo-wise
 rm -rf ./data
 
 [ -f sbom.csv ] && echo "🎉 Thank you! SBOM successfully generated and saved as sbom.csv" || echo "SBOM file not found. Please check for errors."
