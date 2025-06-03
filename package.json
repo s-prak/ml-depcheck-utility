@@ -4,7 +4,8 @@
   "description": "Utility tool for checking deprecation status of dependencies",
   "main": "src/index.js",
   "bin": {
-    "check-deprecations": "./bin/cli.js"
+    "check-deprecations": "./bin/cli.js",
+    "check-deprecations-yarn": "./bin/yarn-deprecations"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "@cyclonedx/cyclonedx-npm": "^3.0.0",
+    "@yarnpkg/lockfile": "^1.1.0",
     "axios": "^1.9.0",
     "csv-parse": "^5.6.0",
     "csv-parser": "^3.2.0",
