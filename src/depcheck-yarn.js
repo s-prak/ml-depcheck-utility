@@ -167,4 +167,6 @@ function checkDependencies () {
   })
 }
 
-checkDependencies()
+module.exports = {
+  checkDependencies
+}
