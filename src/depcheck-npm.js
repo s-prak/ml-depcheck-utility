@@ -17,7 +17,7 @@
  optionally within square brackets <email>.
  * Mojaloop Foundation
  - Sam Kummary <skummary@mojaloop.io>
- - Shuchita Prakash <sprakash_cse210557@mgit.ac.in>
+ - Shuchita Prakash <skp.82603@gmail.com>
  ------------
 */
 
@@ -130,7 +130,7 @@ async function processDependencies (dependencies, root = false, dev = false) {
 
 // Main function to check all dependencies, logs the output
 async function checkDependencies () {
-  console.log(`${BLUE}\nStarting dependency check...${RESET}`)
+  console.log(`${BLUE}\nStarting deprecations check...${RESET}`)
 
   rootPackages = packageLockJson.packages[''].dependencies || {}
   rootDevPackages = packageLockJson.packages[''].devDependencies || {}
