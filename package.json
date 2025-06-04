@@ -4,8 +4,8 @@
   "description": "Utility tool for checking deprecation status of dependencies",
   "main": "src/index.js",
   "bin": {
-    "check-deprecations": "./bin/cli.js",
-    "check-deprecations-yarn": "./bin/yarn-deprecations"
+    "check-deprecations-npm": "./bin/check-deprecations-npm.js",
+    "check-deprecations-yarn": "./bin/check-deprecations-yarn.js"
   },
   "repository": {
     "type": "git",
