@@ -4,4 +4,4 @@
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 
 # Run your actual script from your package directory
-bash "$SCRIPT_DIR/../src/individual-repo/npm/generate-sbom.sh"
+bash "$SCRIPT_DIR/../src/individual-repo/npm/generate-sbom.sh" "$@"

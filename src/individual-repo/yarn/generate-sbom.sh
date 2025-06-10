@@ -4,7 +4,11 @@
 apk add --no-cache libxslt
 
 # Get repo version from package.json
-REPO_VERSION=$(node -p "require('./package.json').version")
+if [ -n "$1" ]; then
+  REPO_VERSION="$1"
+else
+  REPO_VERSION=$(node -p "require('./package.json').version")
+fi
 
 # Detect this script's root (inside CLI package)
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
@@ -30,7 +34,7 @@ node $SCRIPT_DIR/update-packages.js
 node $SCRIPT_DIR/append-fields.js
 
 # Save the SBOM with version in the filename
-FINAL_SBOM_NAME="sbom-yarn-v$REPO_VERSION.csv"
+FINAL_SBOM_NAME="sbom-yarn-$REPO_VERSION.csv"
 mv tmp/result-individual/SBOM-final.csv "$FINAL_SBOM_NAME"
 
 #Delete files
