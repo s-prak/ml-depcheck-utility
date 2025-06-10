@@ -141,7 +141,7 @@ function checkDependencies () {
       // Print direct deprecations
       if (deprecatedDirect.length) {
         foundAny = true
-        const color = mode === 'error' ? YELLOW : RED
+        const color = mode === 'error' ? RED : YELLOW
         console.log(`${color}\nFound ${deprecatedDirect.length} deprecated direct dependencies:\n${RESET}`)
         deprecatedDirect.forEach((r, i) => console.log(`${i + 1}. ${r}`))
       } else {
@@ -151,7 +151,7 @@ function checkDependencies () {
       // Print transitive deprecations
       if (deprecatedTransitive.length) {
         foundAny = true
-        const color = mode === 'error' ? YELLOW : RED
+        const color = mode === 'error' ? RED : YELLOW
         console.log(`${color}\nFound ${deprecatedTransitive.length} deprecated transitive dependencies:\n${RESET}`)
         deprecatedTransitive.forEach((r, i) => console.log(`${i + 1}. ${r}`))
       } else {
