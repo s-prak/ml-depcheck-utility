@@ -261,6 +261,31 @@ jobs:
           path: ./audit/results
           destination: audit
 
+  cli-check:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_docker_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Check shebang lines in bin scripts
+          command: |
+            set -e
+            for file in bin/*; do
+              if [[ "$file" == *.js ]]; then
+                head -n 1 "$file" | grep -qx '#!/usr/bin/env node' || { echo "$file missing #!/usr/bin/env node"; exit 1; }
+              elif [[ "$file" == *.sh ]]; then
+                head -n 1 "$file" | grep -qx '#!/bin/bash' || { echo "$file missing #!/bin/bash"; exit 1; }
+              fi
+            done
+
   audit-licenses:
     executor: default-docker
     steps:
@@ -489,6 +514,17 @@ workflows:
                 - /feature*/
                 - /bugfix*/
       - vulnerability-check:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+      - cli-check:
           context: org-global
           requires:
             - setup
