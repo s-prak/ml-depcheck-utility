@@ -33,7 +33,7 @@ xsltproc $SCRIPT_DIR/components.xslt "./tmp/result-individual/SBOM.xml" > "./tmp
 node $SCRIPT_DIR/append-fields.js
 
 # Save the SBOM with version in filename
-FINAL_SBOM_NAME="sbom-npm-$REPO_VERSION.csv"
+FINAL_SBOM_NAME="sbom-$REPO_VERSION.csv"
 mv tmp/result-individual/SBOM-final.csv "$FINAL_SBOM_NAME"
 
 #Delete files
