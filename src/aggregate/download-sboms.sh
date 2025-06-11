@@ -27,7 +27,7 @@ YARN_REPOS=$(jq -r '.yarn[]' "$JSON_FILE")
 # Process npm repos
 for REPO in $NPM_REPOS; do
   echo "⏳ Checking SBOM for $REPO (npm)..."
-  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom-npm")
+  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom")
 
   if [ -n "$FILE_NAME" ]; then
     curl -s -f -L "https://raw.githubusercontent.com/$ORG/$REPO/main/$FILE_NAME" -o "$TARGET_DIR/${REPO}-$FILE_NAME"
@@ -40,7 +40,7 @@ done
 # Process yarn repos
 for REPO in $YARN_REPOS; do
   echo "⏳ Checking SBOM for $REPO (yarn)..."
-  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom-yarn")
+  FILE_NAME=$(get_sbom_file_name "$REPO" "sbom")
 
   if [ -n "$FILE_NAME" ]; then
     curl -s -f -L "https://raw.githubusercontent.com/$ORG/$REPO/main/$FILE_NAME" -o "$TARGET_DIR/${REPO}-$FILE_NAME"
