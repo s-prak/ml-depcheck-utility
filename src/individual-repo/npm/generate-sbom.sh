@@ -7,7 +7,7 @@ apk add --no-cache libxslt
 if [ -n "$1" ]; then
   REPO_VERSION="$1"
 else
-  REPO_VERSION=$(node -p "require('./package.json').version")
+  REPO_VERSION="v$(node -p "require('./package.json').version")"
 fi
 
 # Detect this script's root (inside CLI package)
@@ -16,7 +16,10 @@ SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 #Install dependencies
 if ! npm install; then
   echo "npm install failed, retrying with --legacy-peer-deps..."
-  npm install --ignore-scripts --legacy-peer-deps --force
+  if ! npm install --ignore-scripts --legacy-peer-deps --force; then
+    echo "npm install failed after retrying."
+    exit 0
+  fi
 fi
 
 #Make temporary directory
@@ -24,7 +27,10 @@ mkdir -p ./tmp
 
 #Generate SBOM
 mkdir -p ./tmp/result-individual
-npx --yes --package @cyclonedx/cyclonedx-npm@3.0.0 -- cyclonedx-npm --ignore-npm-errors --output-format XML --output-file "./tmp/result-individual/SBOM.xml"
+if ! npx --yes --package @cyclonedx/cyclonedx-npm@3.0.0 -- cyclonedx-npm --ignore-npm-errors --output-format "XML" --output-file "./tmp/result-individual/SBOM.xml"; then
+  echo "SBOM generation failed. Exiting gracefully."
+  exit 0 
+fi
 
 #Convert SBOM into csv fornat
 xsltproc $SCRIPT_DIR/components.xslt "./tmp/result-individual/SBOM.xml" > "./tmp/result-individual/SBOM.csv"

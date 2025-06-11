@@ -7,7 +7,7 @@ apk add --no-cache libxslt
 if [ -n "$1" ]; then
   REPO_VERSION="$1"
 else
-  REPO_VERSION=$(node -p "require('./package.json').version")
+  REPO_VERSION="v$(node -p "require('./package.json').version")"
 fi
 
 # Detect this script's root (inside CLI package)
@@ -15,14 +15,20 @@ SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 
 #Install dependencies
 yarn set version stable
-yarn install --mode=skip-build
+if ! yarn install --mode=skip-build; then
+  echo "yarn install failed. Exiting gracefully."
+  exit 0  
+fi
 
 #Make temporary directory
 mkdir -p ./tmp
 
 #Generate SBOM
 mkdir -p ./tmp/result-individual
-yarn dlx @cyclonedx/yarn-plugin-cyclonedx@3.0.3 --of XML -o "./tmp/result-individual/SBOM.xml"
+if ! yarn dlx @cyclonedx/yarn-plugin-cyclonedx@3.0.3 --of XML -o "./tmp/result-individual/SBOM.xml"; then
+  echo "SBOM generation with yarn dlx failed. Exiting gracefully."
+  exit 0  
+fi
 
 #Convert SBOM into csv fornat
 xsltproc $SCRIPT_DIR/components.xslt "./tmp/result-individual/SBOM.xml" > "./tmp/result-individual/SBOM.csv"
