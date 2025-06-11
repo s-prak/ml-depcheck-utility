@@ -53,7 +53,7 @@ fs.readFile(inputFile, 'utf8', async (err, data) => {
 
       return [...row, email, deprecated, reason, modified]
     } catch (error) {
-      //console.warn(`Failed for row: ${row[bomRefIndex]}`, error.message)
+      // console.warn(`Failed for row: ${row[bomRefIndex]}`, error.message)
       return [...row, '', '', '', '']
     }
   })))
@@ -74,5 +74,5 @@ fs.readFile(inputFile, 'utf8', async (err, data) => {
   })
 
   await csvWriter.writeRecords(outputRecords)
-  //console.log(`✅ Augmented CSV written to: ${outputFile}`)
+  // console.log(`✅ Augmented CSV written to: ${outputFile}`)
 })
