@@ -14,26 +14,43 @@ This utility provides a script to scan the dependencies and transitive dependenc
 
 - **Configurable Mode:** Choose between warning or error modes using configuration or environment variables.
 
-- **Reason:** Each deprecated dependency includes a reason, often suggesting alternative packages.
+- **Reason Included:** Each deprecated dependency includes a reason for deprecation, often suggesting alternative packages.
+
+- **Type of Repo:** This utility can be used for standard npm based repositories and yarn based monorepos as well.
 
 ## Usage
 
 You can run the utility directly from the command line once it is installed.<br>
-`npm install @mojaloop/ml-depcheck-utility`<br>
-`check-deprecations`<br>
+
+```bash
+npm install @mojaloop/ml-depcheck-utility
+check-deprecations-npm #for npm based repositories
+check-deprecations-yarn #for yarn based repositories
+```
+
+Using npx to run the command :<br>
+
+```bash
+npx --package @mojaloop/ml-depcheck-utility check-deprecations-npm
+npx --package @mojaloop/ml-depcheck-utility check-deprecations-yarn
+```
 
 ## Changing the Configuration Mode
 
-You can change the mode in two ways:
+You can override the configuration by setting the MODE environment variable before running the utility via using enviornment variables. It supports two modes:
 
-1. **Via the config/default.json file:**
-   The default configuration can be modified by updating the mode setting in the config/default.json file. It supports two modes:
-   - **warning:** Will log deprecated dependencies as warnings (default behavior).
-   - **error:** Will log deprecated dependencies as errors and exit the process with a non-zero exit code.
-2. **Via Environment Variable:**
-   You can override the configuration by setting the MODE environment variable before running the utility. The commands are as follows:
-   - `MODE=warning check-deprecations`
-   - `MODE=error check-deprecations`
+- **warning:** Will log deprecated dependencies as warnings (default behavior).
+- **error:** Will log deprecated dependencies as errors and exit the process with a non-zero exit code.<br>
+
+The commands are as follows, for npm based repositories:
+
+- `MODE=warning check-deprecations-npm`
+- `MODE=error check-deprecations-npm`
+
+The commands are as follows, for yarn based repositories:
+
+- `MODE=warning check-deprecations-yarn`
+- `MODE=error check-deprecations-yarn`
 
 ## Example Output
 
@@ -143,22 +160,27 @@ At the end of the process, an aggregated SBOM is generated. This SBOM:
   - License
   - Publish details
 
+### 4. Easy generation using CLI :
+
+Generate a the SBOM effortlessly using the CLI by a single command. You can either:
+
+- Specify the version manually as a CLI argument, or
+- Let the script auto-detect the version from the project's manifest file (e.g., package.json).
+
 ---
 
 ## How to Use This Tool
 
 To use the SBOM generation tool, follow these steps:
 
-1. **Clone the Repository**:
-   Clone this repository to your local machine:
+1. **Install the package**:
 
    ```bash
-   git clone https://github.com/mojaloop/ml-depcheck-utility.git
-   cd ml-depcheck-utility
+   npm install @mojaloop/ml-depcheck-utility
    ```
 
 2. **Install Dependencies**:
-   Use `npm` to install all required dependencies:
+   Use `npm` to install all required dependencies in the repository:
 
    ```bash
    npm install
@@ -169,20 +191,27 @@ To use the SBOM generation tool, follow these steps:
    - **For individual repositories**:Use this mode if you want to generate SBOMs for one repository at a time.
      - **For npm-based project**:
        ```bash
-       bash src/individual-repo/npm/generate-sbom.sh
+       generate-sbom-npm
        ```
      - **For yarn-based projects**:
        ```bash
-       bash src/individual-repo/yarn/generate-sbom.sh
+       generate-sbom-yarn
+       ```
+     - **Specifying the version**:
+       ```bash
+       generate-sbom-npm <version>
+       ```
+       ```bash
+       generate-sbom-yarn <version>
        ```
    - **Generate Aggregate SBOM for Multiple Repositories**: Use this mode to generate SBOMs for a list of repositories, either the default set or a custom list.
      - **Using Default Repository List**:
      ```bash
-     bash src/aggregate/generate-sbom.sh
+     generate-aggregate
      ```
      - **Using Custom Repository List**:
      ```bash
-     bash src/aggregate/generate-sbom.sh custom-repos-list.json
+     generate-aggregate custom-repos-list.json
      ```
 
 ---
